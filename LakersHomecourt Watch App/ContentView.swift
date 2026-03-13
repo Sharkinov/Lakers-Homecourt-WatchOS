@@ -127,11 +127,11 @@ struct ScoreboardView: View {
                 // Scores
                 HStack {
                     Text("\(data.lakers_score)")
-                        .font(.graphik(44))
+                        .font(.graphik(38))
                         .foregroundColor(.white)
                     Spacer()
                     Text("\(data.opposing_score)")
-                        .font(.graphik(44))
+                        .font(.graphik(38))
                         .foregroundColor(.white)
                 }
                 .padding(.horizontal, 20)
