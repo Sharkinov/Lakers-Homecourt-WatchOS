@@ -6,7 +6,7 @@ import Supabase
 
 enum APIConfig {
     static let baseURL  = "https://ptbcoxaguvbwprxdundz.supabase.co/rest/v1"
-    static let anonKey  =
+    static let anonKey  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0YmNveGFndXZid3ByeGR1bmR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzNDMzOTQsImV4cCI6MjA4ODkxOTM5NH0.gPMQ9zMFJZafkgQGjaoHBaacU787LhLpENcRMHFXpH8"
     static let schema   = "simulacion_juego"
 }
 
