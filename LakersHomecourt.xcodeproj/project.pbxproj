@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		820FC9FC2F58C9EC00CC8294 /* LakersHomecourt Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 820FC9FB2F58C9EC00CC8294 /* LakersHomecourt Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		82CD87432F63452400CAB09F /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 82CD87422F63452400CAB09F /* Functions */; };
+		82CD87452F63452400CAB09F /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 82CD87442F63452400CAB09F /* PostgREST */; };
+		82CD87472F63452400CAB09F /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 82CD87462F63452400CAB09F /* Realtime */; };
+		82CD87492F63452400CAB09F /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 82CD87482F63452400CAB09F /* Storage */; };
+		82CD874B2F63452400CAB09F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 82CD874A2F63452400CAB09F /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,9 +44,22 @@
 		820FC9FB2F58C9EC00CC8294 /* LakersHomecourt Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LakersHomecourt Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		82A365BF2F60D35C0018E5CA /* Exceptions for "LakersHomecourt Watch App" folder in "LakersHomecourt" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				GraphikRegular.otf,
+			);
+			target = 820FC9F42F58C9EC00CC8294 /* LakersHomecourt */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		820FC9FF2F58C9EC00CC8294 /* LakersHomecourt Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				82A365BF2F60D35C0018E5CA /* Exceptions for "LakersHomecourt Watch App" folder in "LakersHomecourt" target */,
+			);
 			path = "LakersHomecourt Watch App";
 			sourceTree = "<group>";
 		};
@@ -52,6 +70,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82CD874B2F63452400CAB09F /* Supabase in Frameworks */,
+				82CD87492F63452400CAB09F /* Storage in Frameworks */,
+				82CD87472F63452400CAB09F /* Realtime in Frameworks */,
+				82CD87452F63452400CAB09F /* PostgREST in Frameworks */,
+				82CD87432F63452400CAB09F /* Functions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +137,11 @@
 			);
 			name = "LakersHomecourt Watch App";
 			packageProductDependencies = (
+				82CD87422F63452400CAB09F /* Functions */,
+				82CD87442F63452400CAB09F /* PostgREST */,
+				82CD87462F63452400CAB09F /* Realtime */,
+				82CD87482F63452400CAB09F /* Storage */,
+				82CD874A2F63452400CAB09F /* Supabase */,
 			);
 			productName = "LakersHomecourt Watch App";
 			productReference = 820FC9FB2F58C9EC00CC8294 /* LakersHomecourt Watch App.app */;
@@ -146,6 +174,9 @@
 			);
 			mainGroup = 820FC9EE2F58C9EC00CC8294;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 820FC9F62F58C9EC00CC8294 /* Products */;
 			projectDirPath = "";
@@ -319,7 +350,9 @@
 				DEVELOPMENT_TEAM = R8ARC534CX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LakersHomecourt-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = LakersHomecourt;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -352,7 +385,9 @@
 				DEVELOPMENT_TEAM = R8ARC534CX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LakersHomecourt-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = LakersHomecourt;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -442,6 +477,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		82CD87422F63452400CAB09F /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		82CD87442F63452400CAB09F /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		82CD87462F63452400CAB09F /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		82CD87482F63452400CAB09F /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		82CD874A2F63452400CAB09F /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82CD87412F63452400CAB09F /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 820FC9EF2F58C9EC00CC8294 /* Project object */;
 }
