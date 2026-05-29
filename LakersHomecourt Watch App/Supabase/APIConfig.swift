@@ -6,18 +6,14 @@
 //
 
 import Foundation
-
 import Supabase
-
-// Config
 
 enum APIConfig {
     static let baseURL  = "https://ptbcoxaguvbwprxdundz.supabase.co/rest/v1"
-    static let anonKey  = "TU_ANON_KEY"
+    static let anonKey  = "sb_publishable_4EBAeMLhwGSLtPOq5K2D_Q_CJ0bSMIi"
     static let schema   = "simulacion_juego"
 }
 
-// Supabase Client
 
 let supabase = SupabaseClient(
     supabaseURL: URL(string: "https://ptbcoxaguvbwprxdundz.supabase.co")!,
