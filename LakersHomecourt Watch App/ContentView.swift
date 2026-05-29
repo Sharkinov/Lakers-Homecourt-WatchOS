@@ -7,22 +7,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var network = NetworkManager()
+    @StateObject private var viewModel = GameViewModel()
 
     var body: some View {
         Group {
-            if network.isLoading{
+            if viewModel.isLoading{
                 LoadingView()
                 
-            } else if let error = network.error {
+            } else if let error = viewModel.error {
                 ErrorView(message: error)
-            } else if let sb = network.scoreboard,
-                      let fg = network.fieldGoal,
-                      let tc = network.teamComparison {
+            } else if let sb = viewModel.scoreboard,
+                      let fg = viewModel.fieldGoal,
+                      let tc = viewModel.teamComparison {
                 TabView {
                     ScoreboardView(
                         data: sb,
-                        gameClock: network.gameClock(from: sb.seconds_elapsed))
+                        gameClock: viewModel.gameClock(from: sb.seconds_elapsed))
                     FieldGoalView(data: fg)
                     TeamComparisonView(data: tc)
                 }
@@ -32,11 +32,11 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            network.fetchAll()
-            network.subscribeToRealtime()
+            viewModel.fetchAll()
+            viewModel.subscribeToRealtime()
         }
         .onDisappear {
-            network.unsubscribe()
+            viewModel.unsubscribe()
         }
     }
 }
