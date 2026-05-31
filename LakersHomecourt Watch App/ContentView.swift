@@ -23,7 +23,7 @@ struct ContentView: View {
                     ScoreboardView(
                         data: sb)
                     FieldGoalView(data: fg)
-                    TeamComparisonView(data: tc)
+                    TeamComparisonView(data: tc, lakersName: sb.lakersAbbr, opposingName: sb.opponentAbbr)
                 }
                 .tabViewStyle(.page)
             } else {

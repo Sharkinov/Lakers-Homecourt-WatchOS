@@ -32,7 +32,7 @@ struct ScoreboardView: View {
                     // LAL
                     VStack(spacing: 4) {
                         TeamColumn(logoURL: data.lakers_logo)
-                        Text(lakersAbbr)
+                        Text(data.lakersAbbr)
                             .font(.graphik(15))
                             .foregroundStyle(Color.lakersGold)
                             .tracking(1.5)
@@ -51,7 +51,7 @@ struct ScoreboardView: View {
                     // Rival
                     VStack(spacing: 4) {
                         TeamColumn(logoURL: data.opposing_team_logo)
-                        Text(opponentAbbr)
+                        Text(data.opponentAbbr)
                             .font(.graphik(15))
                             .foregroundStyle(.white.opacity(0.70))
                             .tracking(1.5)
@@ -90,16 +90,6 @@ struct ScoreboardView: View {
                 _ in currentSeconds += 1
             }
         }
-    }
-
-    var opponentAbbr: String {
-        let words = data.opposing_team_name.split(separator: " ")
-        return words.prefix(3).compactMap { $0.first }.map { String($0) }.joined()
-    }
-
-    var lakersAbbr: String {
-        let words = data.lakers_name.split(separator: " ")
-        return words.prefix(3).compactMap { $0.first }.map { String($0) }.joined()
     }
     
     var gameClock: String {

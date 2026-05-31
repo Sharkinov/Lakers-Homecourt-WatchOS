@@ -10,6 +10,8 @@ import SwiftUI
 struct TeamComparisonView: View {
 
     let data: TeamComparisonResponse
+    let lakersName: String
+    let opposingName: String
 
     struct StatRow: Identifiable {
         let id    = UUID()
@@ -29,13 +31,6 @@ struct TeamComparisonView: View {
             appGradient.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 10) {
-
-                HStack() {
-                    LegendDot(color: .lakersGold, label: "LA")
-                    Spacer()
-                    LegendDot(color: .gswGray,    label: "OPP")
-                }
-                .padding(.bottom, 2).padding(.horizontal)
 
                 ForEach(stats) { stat in
                     VStack(alignment: .leading, spacing: 4) {
@@ -59,8 +54,19 @@ struct TeamComparisonView: View {
                             }
                         }
                         .frame(height: 14)
+                        
                     }
                 }
+                HStack() {
+                    LegendDot(color: .lakersGold, label: lakersName)
+                    Spacer()
+                    HStack(spacing: 5) {
+                        Text(opposingName)
+                            .font(.graphik(12))
+                            .foregroundColor(.white)
+                        Circle().fill(Color.gswGray).frame(width: 7, height: 7)
+                    }
+                }.padding(.horizontal).padding(.top, 5)
             }
             .padding(.horizontal, 12)
         }
@@ -77,6 +83,6 @@ struct TeamComparisonView: View {
             opposing_assists: 21,
             lakers_steals: 9,
             opposing_steals: 6
-        )
+        ), lakersName: "LA", opposingName: "GS"
     )
 }
