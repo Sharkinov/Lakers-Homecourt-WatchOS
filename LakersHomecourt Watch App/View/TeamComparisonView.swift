@@ -30,17 +30,18 @@ struct TeamComparisonView: View {
 
             VStack(alignment: .leading, spacing: 10) {
 
-                HStack(spacing: 16) {
+                HStack() {
                     LegendDot(color: .lakersGold, label: "LA")
+                    Spacer()
                     LegendDot(color: .gswGray,    label: "OPP")
                 }
-                .padding(.bottom, 2)
+                .padding(.bottom, 2).padding(.horizontal)
 
                 ForEach(stats) { stat in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(stat.label)
                             .font(.graphik(12))
-                            .foregroundColor(.white)
+                            .foregroundColor(.white).padding(.top,5)
 
                         GeometryReader { geo in
                             let total  = stat.lakers + stat.opposing
@@ -50,11 +51,11 @@ struct TeamComparisonView: View {
                             HStack(spacing: 3) {
                                 RoundedRectangle(cornerRadius: 4)
                                     .fill(Color.lakersGold)
-                                    .frame(width: lWidth, height: 14)
+                                    .frame(width: lWidth, height: 20)
 
                                 RoundedRectangle(cornerRadius: 4)
                                     .fill(Color.gswGray.opacity(0.7))
-                                    .frame(width: gWidth, height: 14)
+                                    .frame(width: gWidth, height: 20)
                             }
                         }
                         .frame(height: 14)
@@ -62,7 +63,6 @@ struct TeamComparisonView: View {
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
         }
     }
 }
