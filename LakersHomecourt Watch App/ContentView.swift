@@ -21,8 +21,7 @@ struct ContentView: View {
                       let tc = viewModel.teamComparison {
                 TabView {
                     ScoreboardView(
-                        data: sb,
-                        gameClock: viewModel.gameClock(from: sb.seconds_elapsed))
+                        data: sb)
                     FieldGoalView(data: fg)
                     TeamComparisonView(data: tc)
                 }

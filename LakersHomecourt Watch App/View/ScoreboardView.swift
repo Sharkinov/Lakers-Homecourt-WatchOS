@@ -6,82 +6,126 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ScoreboardView: View {
     let data: ScoreboardResponse
-    let gameClock: String
+    
+    @State private var currentSeconds: Int = 0
+
+    private let timer = Timer.publish(
+        every: 1,
+        on: .main,
+        in: .common
+    ).autoconnect()
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack {
             appGradient.ignoresSafeArea()
 
             VStack(spacing: 0) {
+                Spacer()
 
-                // Status bar
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 7, height: 7)
-                    Text("\(gameClock)")
-                        .font(.graphik(13))
-                        .foregroundColor(.white)
-                    Spacer()
-                }
-                .padding(.horizontal, 12)
-                .padding(.top, 6)
+                // Columnas por equipo
+                HStack(alignment: .center, spacing: 0) {
 
-                // Gold divider
-                Rectangle()
-                    .fill(Color.lakersGold)
-                    .frame(height: 1.5)
-                    .padding(.horizontal, 12)
-                    .padding(.top, 5)
-
-                // Logos
-                HStack(alignment: .top) {
-                    TeamColumn(name: lakersAbbr, logoURL: data.lakers_logo)
-                    Spacer()
-                    TeamColumn(name: opponentAbbr, logoURL: data.opposing_team_logo)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 10)
-
-                // Scores
-                HStack {
-                    Text("\(data.lakers_score)")
-                        .font(.graphik(25))
-                        .foregroundColor(.white)
-                    Spacer()
-                    Text("\(data.opposing_score)")
-                        .font(.graphik(25))
-                        .foregroundColor(.white)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 2)
-
-                Spacer(minLength: 4)
-
-                // Defense ticker
-                /*if data.defense {
-                    ZStack {
-                        Color(red: 0.78, green: 0.10, blue: 0.10)
-                        ScrollingTicker(text: "DEFENSE")
+                    // LAL
+                    VStack(spacing: 4) {
+                        TeamColumn(logoURL: data.lakers_logo)
+                        Text(lakersAbbr)
+                            .font(.graphik(15))
+                            .foregroundStyle(Color.lakersGold)
+                            .tracking(1.5)
+                        Text("\(data.lakers_score)")
+                            .font(.graphik(40))
+                            .foregroundStyle(Color.lakersGold)
+                            .shadow(color: Color.lakersGold.opacity(0.3), radius: 8)
                     }
-                    .frame(height: 20)
-                }*/
+                    .frame(maxWidth: .infinity)
+
+                    Text(":")
+                        .font(.graphik(40))
+                        .foregroundStyle(.white.opacity(0.55))
+                        .padding(.bottom, 6)
+
+                    // Rival
+                    VStack(spacing: 4) {
+                        TeamColumn(logoURL: data.opposing_team_logo)
+                        Text(opponentAbbr)
+                            .font(.graphik(15))
+                            .foregroundStyle(.white.opacity(0.70))
+                            .tracking(1.5)
+                        Text("\(data.opposing_score)")
+                            .font(.graphik(40))
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal, 8)
+
+                Spacer()
+
+                // Línea gold sutil abajo
+                Rectangle()
+                    .fill(Color.lakersGold.opacity(0.6))
+                    .frame(width: 40, height: 1.5)
+                    .padding(.bottom, 6)
+                // Clock discreto arriba
+                HStack(spacing: 4) {
+
+                    Circle()
+                        .fill(.red)
+                        .frame(width: 7, height: 7)
+
+                    Text("Q\(quarter) • \(gameClock)")
+                        .font(.graphik(12))
+                        .foregroundStyle(.white.opacity(0.70))
+                }
+                .padding(.top, 4)
+            }
+            .onAppear{
+                currentSeconds = data.seconds_elapsed
+            }
+            .onReceive(timer){
+                _ in currentSeconds += 1
             }
         }
     }
 
-    // e.g. "Golden State Warriors" → "GSW"
     var opponentAbbr: String {
         let words = data.opposing_team_name.split(separator: " ")
         return words.prefix(3).compactMap { $0.first }.map { String($0) }.joined()
     }
-    
+
     var lakersAbbr: String {
         let words = data.lakers_name.split(separator: " ")
         return words.prefix(3).compactMap { $0.first }.map { String($0) }.joined()
+    }
+    
+    var gameClock: String {
+
+        let quarterDuration = 12 * 60
+
+        let secondsIntoQuarter = currentSeconds % quarterDuration
+
+        let remaining = max(
+            quarterDuration - secondsIntoQuarter,
+            0
+        )
+
+        let minutes = remaining / 60
+        let seconds = remaining % 60
+
+        return String(
+            format: "%d:%02d",
+            minutes,
+            seconds
+        )
+    }
+
+    var quarter: Int {
+
+        min((currentSeconds / (12 * 60)) + 1, 4)
     }
 }
 
@@ -101,7 +145,6 @@ struct ScoreboardView: View {
             seconds_elapsed: 320,
             venue: "Crypto.com Arena",
             attended: 18997
-        ),
-        gameClock: "6:40"
+        )
     )
 }
