@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct TeamColumn: View {
-    let name: String
     let logoURL: String
 
     var body: some View {
@@ -20,22 +19,13 @@ struct TeamColumn: View {
                 default:
                     Circle()
                         .fill(Color.white.opacity(0.12))
-                        .overlay(
-                            Text(name)
-                                .font(.graphik(10))
-                                .foregroundColor(.white)
-                        )
                 }
             }
-            .frame(width: 52, height: 52)
-
-            Text(name)
-                .font(.graphik(14))
-                .foregroundColor(.white)
+            .frame(width: 30, height: 30)
         }
     }
 }
 
 #Preview {
-    TeamColumn(name: "Warriors", logoURL: "")
+    TeamColumn(logoURL: "")
 }

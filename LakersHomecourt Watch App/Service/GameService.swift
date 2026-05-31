@@ -20,7 +20,6 @@ final class GameService {
         ]
     }
 
-    // MARK: - Fetch Generic
 
     private func fetch<T: Codable>(
         _ type: T.Type,
@@ -44,7 +43,6 @@ final class GameService {
         return try JSONDecoder().decode([T].self, from: data)
     }
 
-    // MARK: - Public Fetches
 
     func fetchScoreboard() async throws -> ScoreboardResponse? {
 
@@ -70,7 +68,6 @@ final class GameService {
         ).first
     }
 
-    // MARK: - Realtime
 
     func subscribeToRealtime(
         onGameUpdate: @escaping () async -> Void
