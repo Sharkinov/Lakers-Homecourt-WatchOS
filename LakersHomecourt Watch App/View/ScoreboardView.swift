@@ -37,7 +37,7 @@ struct ScoreboardView: View {
                             .foregroundStyle(Color.lakersGold)
                             .tracking(1.5)
                         Text("\(data.lakers_score)")
-                            .font(.graphik(40))
+                            .font(.graphik(35))
                             .foregroundStyle(Color.lakersGold)
                             .shadow(color: Color.lakersGold.opacity(0.3), radius: 8)
                     }
@@ -56,7 +56,7 @@ struct ScoreboardView: View {
                             .foregroundStyle(.white.opacity(0.70))
                             .tracking(1.5)
                         Text("\(data.opposing_score)")
-                            .font(.graphik(40))
+                            .font(.graphik(35))
                             .foregroundStyle(.white.opacity(0.85))
                     }
                     .frame(maxWidth: .infinity)

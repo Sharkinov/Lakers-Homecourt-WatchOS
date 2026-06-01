@@ -8,47 +8,77 @@
 import SwiftUI
 
 struct FieldGoalView: View {
-    let data: FieldGoalResponse
 
-    var pct: Double { (data.fg_percentage) / 100.0 }
+    let data: FieldGoalResponse
+    let lakersName: String
+
+    var pct: Double {
+        data.fg_percentage / 100.0
+    }
 
     var body: some View {
+
         ZStack {
             appGradient.ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            VStack(spacing: 16) {
+
                 HStack(spacing: 6) {
+
                     Circle()
                         .fill(Color.lakersGold)
                         .frame(width: 8, height: 8)
-                    Text("Lakers")
+
+                    Text(lakersName)
                         .font(.graphik(13))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 14)
 
                 ZStack {
-                    Circle()
-                        .stroke(Color.white.opacity(0.9), lineWidth: 20)
 
                     Circle()
-                        .trim(from: 0, to: CGFloat(pct))
+                        .stroke(
+                            Color.white.opacity(0.12),
+                            lineWidth: 16
+                        )
+
+                    Circle()
+                        .trim(
+                            from: 0,
+                            to: CGFloat(pct)
+                        )
                         .stroke(
                             Color.lakersGold,
-                            style: StrokeStyle(lineWidth: 20, lineCap: .butt)
+                            style: StrokeStyle(
+                                lineWidth: 16,
+                                lineCap: .round
+                            )
                         )
                         .rotationEffect(.degrees(-90))
+                        .shadow(
+                            color: Color.lakersGold.opacity(0.35),
+                            radius: 4
+                        )
 
-                    Text("\(Int(data.fg_percentage))%")
-                        .font(.graphik(22))
-                        .foregroundColor(.white)
+                    VStack {
+
+                        Text("\(Int(data.fg_percentage))%")
+                            .font(.graphik(20))
+                            .foregroundStyle(.white)
+                    }
                 }
-                .frame(width: 100, height: 100)
+                .frame(
+                    width: 105
+                )
 
-                Text("Field goal")
-                    .font(.graphik(12))
-                    .foregroundColor(.white.opacity(0.7)).padding(.top, 15)
+                Text("FIELD GOAL")
+                    .font(.graphik(10))
+                    .foregroundStyle(
+                        .white.opacity(0.60)
+                    )
+                    .tracking(1.5).padding(.top, 5)
             }
         }
     }
@@ -59,6 +89,7 @@ struct FieldGoalView: View {
         data: FieldGoalResponse(
             game_id: 1,
             fg_percentage: 47.5
-        )
+        ),
+        lakersName: "LAL"
     )
 }
