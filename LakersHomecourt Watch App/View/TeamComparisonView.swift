@@ -10,9 +10,11 @@ import SwiftUI
 struct TeamComparisonView: View {
 
     let data: TeamComparisonResponse
+    let lakersName: String
+    let opposingName: String
 
     struct StatRow: Identifiable {
-        let id    = UUID()
+        let id = UUID()
         let label: String
         let lakers: Double
         let opposing: Double
@@ -21,7 +23,7 @@ struct TeamComparisonView: View {
     var stats: [StatRow] {[
         StatRow(label: "Rebounds", lakers: Double(data.lakers_rebounds),  opposing: Double(data.opposing_rebounds)),
         StatRow(label: "Assists",  lakers: Double(data.lakers_assists),   opposing: Double(data.opposing_assists)),
-        StatRow(label: "Steals",   lakers: Double(data.lakers_steals),    opposing: Double(data.opposing_steals)),
+        StatRow(label: "Steals",   lakers: Double(data.lakers_steals),    opposing: Double(data.opposing_steals))
     ]}
 
     var body: some View {
@@ -30,37 +32,24 @@ struct TeamComparisonView: View {
 
             VStack(alignment: .leading, spacing: 10) {
 
-                HStack() {
-                    LegendDot(color: .lakersGold, label: "LA")
-                    Spacer()
-                    LegendDot(color: .gswGray,    label: "OPP")
-                }
-                .padding(.bottom, 2).padding(.horizontal)
-
                 ForEach(stats) { stat in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(stat.label)
-                            .font(.graphik(12))
-                            .foregroundColor(.white).padding(.top,5)
+                    StatBarRow(stat: stat)
+                }
 
-                        GeometryReader { geo in
-                            let total  = stat.lakers + stat.opposing
-                            let lWidth = geo.size.width * CGFloat(stat.lakers   / total)
-                            let gWidth = geo.size.width * CGFloat(stat.opposing / total)
-
-                            HStack(spacing: 3) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.lakersGold)
-                                    .frame(width: lWidth, height: 20)
-
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.gswGray.opacity(0.7))
-                                    .frame(width: gWidth, height: 20)
-                            }
-                        }
-                        .frame(height: 14)
+                HStack {
+                    LegendDot(color: .lakersGold, label: lakersName)
+                    Spacer()
+                    HStack(spacing: 5) {
+                        Text(opposingName)
+                            .font(.graphik(10))
+                            .foregroundColor(.white)
+                        Circle()
+                            .fill(Color.gswGray)
+                            .frame(width: 6)
                     }
                 }
+                .padding(.horizontal, 30)
+                .padding(.top, 5)
             }
             .padding(.horizontal, 12)
         }
@@ -77,6 +66,8 @@ struct TeamComparisonView: View {
             opposing_assists: 21,
             lakers_steals: 9,
             opposing_steals: 6
-        )
+        ),
+        lakersName: "LA",
+        opposingName: "GS"
     )
 }
