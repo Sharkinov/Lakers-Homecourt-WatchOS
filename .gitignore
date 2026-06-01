@@ -1,0 +1,11 @@
+# APNs Key
+*.p8
+secrets/
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+DerivedData/
+
+# macOS
+.DS_Store
