@@ -19,14 +19,32 @@ struct ContentView: View {
             } else if let sb = viewModel.scoreboard,
                       let fg = viewModel.fieldGoal,
                       let tc = viewModel.teamComparison {
+
                 TabView {
-                    ScoreboardView(
-                        data: sb)
-                    FieldGoalView(data: fg, lakersName: sb.lakersAbbr)
-                    TeamComparisonView(data: tc, lakersName: sb.lakersAbbr, opposingName: sb.opponentAbbr)
+                    ScoreboardView(data: sb)
+
+                    FieldGoalView(
+                        data: fg,
+                        lakersName: sb.lakersAbbr
+                    )
+
+                    TeamComparisonView(
+                        data: tc,
+                        lakersName: sb.lakersAbbr,
+                        opposingName: sb.opponentAbbr
+                    )
                 }
                 .tabViewStyle(.page)
+
+            } else if let nextGame = viewModel.nextGame {
+
+                CountdownView(
+                    nextGame: nextGame,
+                    countdown: viewModel.countdownComponents
+                )
+
             } else {
+
                 LoadingView()
             }
         }

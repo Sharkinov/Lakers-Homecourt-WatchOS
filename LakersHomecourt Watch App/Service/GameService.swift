@@ -132,4 +132,10 @@ final class GameService {
             await channel?.unsubscribe()
         }
     }
+    func fetchNextGame() async throws -> NextGameResponse? {
+        try await fetch(
+            NextGameResponse.self,
+            from: "v_prox_juego"
+        ).first
+    }
 }

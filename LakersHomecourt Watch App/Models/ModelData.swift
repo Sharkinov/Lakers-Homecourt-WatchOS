@@ -37,3 +37,10 @@ struct TeamComparisonResponse: Codable, Sendable {
     let lakers_steals: Int
     let opposing_steals: Int
 }
+
+struct NextGameResponse: Codable, Sendable {
+    let game_id: Int
+    let opposing_team_name: String
+    let opposing_team_logo: String
+    let start_date: String
+}
