@@ -13,9 +13,9 @@ struct LegendDot: View {
 
     var body: some View {
         HStack(spacing: 5) {
-            Circle().fill(color).frame(width: 7, height: 7)
+            Circle().fill(color).frame(width: 6)
             Text(label)
-                .font(.graphik(12))
+                .font(.graphik(10))
                 .foregroundColor(.white)
         }
     }

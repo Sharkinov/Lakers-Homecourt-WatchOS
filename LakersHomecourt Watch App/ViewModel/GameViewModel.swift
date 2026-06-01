@@ -87,3 +87,22 @@ final class GameViewModel: ObservableObject {
         )
     }
 }
+
+extension ScoreboardResponse {
+
+    var lakersAbbr: String {
+        let words = lakers_name.split(separator: " ")
+        return words.prefix(3)
+            .compactMap(\.first)
+            .map(String.init)
+            .joined()
+    }
+
+    var opponentAbbr: String {
+        let words = opposing_team_name.split(separator: " ")
+        return words.prefix(3)
+            .compactMap(\.first)
+            .map(String.init)
+            .joined()
+    }
+}
