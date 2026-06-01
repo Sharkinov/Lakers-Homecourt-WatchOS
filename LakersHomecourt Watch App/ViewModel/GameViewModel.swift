@@ -19,8 +19,13 @@ final class GameViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
 
+    @Published var nextGame: NextGameResponse?
+    @Published var countdownComponents: CountdownComponents = .zero
+
+    private var countdownTimer: Timer?
+
     private let service = GameService()
-    
+
     func fetchAll() {
 
         isLoading = true
@@ -30,17 +35,23 @@ final class GameViewModel: ObservableObject {
 
             do {
 
-                let scoreboard = try await service.fetchScoreboard()
+                let scoreboard  = try await service.fetchScoreboard()
+                let fieldGoal   = try await service.fetchFieldGoal()
+                let comparison  = try await service.fetchTeamComparison()
+                let next        = try await service.fetchNextGame()
 
-                let fieldGoal = try await service.fetchFieldGoal()
-
-                let comparison = try await service.fetchTeamComparison()
-
-                self.scoreboard = scoreboard
-                self.fieldGoal = fieldGoal
+                self.scoreboard     = scoreboard
+                self.fieldGoal      = fieldGoal
                 self.teamComparison = comparison
+                self.nextGame       = next
 
                 self.isLoading = false
+
+                if next != nil {
+                    self.startCountdownTimer()
+                } else {
+                    self.stopCountdownTimer()
+                }
 
             } catch {
 
@@ -54,7 +65,6 @@ final class GameViewModel: ObservableObject {
     func subscribeToRealtime() {
 
         service.subscribeToRealtime {
-
             await MainActor.run {
                 self.fetchAll()
             }
@@ -62,29 +72,80 @@ final class GameViewModel: ObservableObject {
     }
 
     func unsubscribe() {
-
         service.unsubscribe()
     }
 
-    func gameClock(
-        from secondsElapsed: Int
-    ) -> String {
+    func gameClock(from secondsElapsed: Int) -> String {
 
         let quarterDuration = 12 * 60
-
-        let remaining = max(
-            quarterDuration - secondsElapsed,
-            0
-        )
-
+        let remaining = max(quarterDuration - secondsElapsed, 0)
         let minutes = remaining / 60
         let seconds = remaining % 60
 
-        return String(
-            format: "%d:%02d",
-            minutes,
-            seconds
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+
+    func startCountdownTimer() {
+        stopCountdownTimer()
+        updateCountdown()
+        countdownTimer = Timer.scheduledTimer(
+            withTimeInterval: 1.0,
+            repeats: true,
+            block: { @Sendable [weak self] _ in
+                guard let self else { return }
+                Task { @MainActor in
+                    self.updateCountdown()
+                }
+            }
         )
+    }
+
+    func stopCountdownTimer() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+    }
+
+    private func updateCountdown() {
+
+        guard let next = nextGame else {
+            countdownComponents = .zero
+            return
+        }
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        let targetDate: Date? = formatter.date(from: next.start_date) ?? {
+            formatter.formatOptions = [.withInternetDateTime]
+            return formatter.date(from: next.start_date)
+        }()
+
+        guard let targetDate else {
+            countdownComponents = .zero
+            return
+        }
+
+        let diff = Int(targetDate.timeIntervalSinceNow)
+
+        guard diff > 0 else {
+            countdownComponents = .zero
+            stopCountdownTimer()
+            fetchAll()
+            return
+        }
+
+        countdownComponents = CountdownComponents(
+            days:    diff / 86_400,
+            hours:   (diff % 86_400) / 3_600,
+            minutes: (diff % 3_600) / 60,
+            seconds: diff % 60
+        )
+    }
+
+    nonisolated func cleanup() {
+        Task { @MainActor in
+            self.stopCountdownTimer()
+        }
     }
 }
 
@@ -104,5 +165,20 @@ extension ScoreboardResponse {
             .compactMap(\.first)
             .map(String.init)
             .joined()
+    }
+}
+
+struct CountdownComponents {
+    let days: Int
+    let hours: Int
+    let minutes: Int
+    let seconds: Int
+
+    static let zero = CountdownComponents(
+        days: 0, hours: 0, minutes: 0, seconds: 0
+    )
+
+    var isZero: Bool {
+        days == 0 && hours == 0 && minutes == 0 && seconds == 0
     }
 }
