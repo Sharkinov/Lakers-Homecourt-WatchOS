@@ -16,19 +16,45 @@ struct NotificationSettingsView: View {
     @AppStorage("notif_lakers_run") private var lakersRun: Bool = true
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Notifications")
-                    .font(.headline)
-                    .padding(.bottom, 4)
-                
-                Toggle("Game start", isOn: $gameStart)
-                Toggle("Quarter start", isOn: $quarterChange)
-                Toggle("Game end", isOn: $gameEnd)
-                Toggle("Lakers score", isOn: $lakersScore)
-                Toggle("Lakers on a run", isOn: $lakersRun)
+        ZStack {
+            appGradient.ignoresSafeArea()
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    
+                    Text("NOTIFICATIONS")
+                        .font(.graphik(10))
+                        .foregroundStyle(.white.opacity(0.5))
+                        .tracking(1.5)
+                        .padding(.bottom, 4)
+                    
+                    NotifToggle(label: "Game start", isOn: $gameStart)
+                    NotifToggle(label: "Quarter start", isOn: $quarterChange)
+                    NotifToggle(label: "Game end", isOn: $gameEnd)
+                    NotifToggle(label: "Lakers score", isOn: $lakersScore)
+                    NotifToggle(label: "Lakers on a run", isOn: $lakersRun)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 16)
             }
-            .padding()
+        }
+    }
+}
+
+private struct NotifToggle: View {
+    let label: String
+    @Binding var isOn: Bool
+    
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.graphik(13))
+                .foregroundStyle(.white.opacity(0.85))
+            Spacer()
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(Color.lakersGold)
         }
     }
 }

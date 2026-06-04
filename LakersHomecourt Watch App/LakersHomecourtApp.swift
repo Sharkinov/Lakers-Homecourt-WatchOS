@@ -24,6 +24,7 @@ struct LakersHomecourt_Watch_AppApp: App {
 class AppDelegate: NSObject, WKApplicationDelegate, UNUserNotificationCenterDelegate {
     
     func applicationDidFinishLaunching() {
+        print("AppDelegate: applicationDidFinishLaunching called")
         UNUserNotificationCenter.current().delegate = self
         requestNotificationPermission()
     }
