@@ -15,8 +15,6 @@ Real-time scores, live stats, and push notifications for key game moments, all o
 
 <br />
 
-[View Demo](#) · [Report Bug](#) · [Request Feature](#)
-
 </div>
 
 ---
