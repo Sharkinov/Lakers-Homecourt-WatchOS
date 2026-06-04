@@ -74,6 +74,27 @@ class AppDelegate: NSObject, WKApplicationDelegate, UNUserNotificationCenterDele
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound])
+        
+        let title = notification.request.content.title
+        
+        let gameStart = UserDefaults.standard.object(forKey: "notif_game_start") as? Bool ?? true
+        let quarterChange = UserDefaults.standard.object(forKey: "notif_quarter_change") as? Bool ?? true
+        let gameEnd = UserDefaults.standard.object(forKey: "notif_game_end") as? Bool ?? true
+        let lakersScore = UserDefaults.standard.object(forKey: "notif_lakers_score") as? Bool ?? true
+        let lakersRun = UserDefaults.standard.object(forKey: "notif_lakers_run") as? Bool ?? true
+        
+        var shouldShow = false
+        
+        if title == "Game started" { shouldShow = gameStart }
+        else if title.contains("started") { shouldShow = quarterChange }
+        else if title == "Lakers win" || title == "Lakers lose" { shouldShow = gameEnd }
+        else if title == "Lakers score" { shouldShow = lakersScore }
+        else if title == "Lakers on a run" { shouldShow = lakersRun }
+        
+        if shouldShow {
+            completionHandler([.banner, .sound])
+        } else {
+            completionHandler([])
+        }
     }
 }
