@@ -33,17 +33,23 @@ struct ContentView: View {
                         lakersName: sb.lakersAbbr,
                         opposingName: sb.opponentAbbr
                     )
+                    
+                    NotificationSettingsView()
                 }
                 .tabViewStyle(.page)
 
             } else if let nextGame = viewModel.nextGame {
-
+                
+                TabView{
                 CountdownView(
                     nextGame: nextGame,
                     countdown: viewModel.countdownComponents
                 )
+                NotificationSettingsView()
+            }
+            .tabViewStyle(.page)
 
-            } else {
+        } else {
 
                 LoadingView()
             }
