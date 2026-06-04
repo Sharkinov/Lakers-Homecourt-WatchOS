@@ -1,47 +1,67 @@
+<div align="center">
+
+<img src="https://img.shields.io/badge/watchOS-26.0+-5B2D8E?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Swift-5.9-F05138?style=for-the-badge&logo=swift&logoColor=white" />
+<img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" />
+
+<br />
+<br />
+
 # LakersHomecourt Watch App
 
-> Stay connected to every Lakers game — right from your wrist.
+**Stay connected to every Lakers game — right from your wrist.**
 
-![watchOS](https://img.shields.io/badge/watchOS-26.0+-purple?style=flat-square)
-![Swift](https://img.shields.io/badge/Swift-5.9-orange?style=flat-square)
-![Supabase](https://img.shields.io/badge/Supabase-Backend-green?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+Real-time scores, live stats, and push notifications for key game moments, all on your Apple Watch.
+
+<br />
+
+[View Demo](#) · [Report Bug](#) · [Request Feature](#)
+
+</div>
 
 ---
 
-## Overview
+## About the Project
 
-**LakersHomecourt** is a standalone Apple Watch app for Lakers fans. It displays live game stats, real-time scoreboards, and push notifications for key game moments — all from your wrist.
+LakersHomecourt is a standalone Apple Watch app built for Lakers fans. It connects to the same Supabase backend as the LakersHomecourt web platform and delivers live game data directly to your wrist — no phone required.
 
-Built as part of the **LakersHomecourt** fan platform ecosystem, the Watch app connects to the same Supabase backend as the web app.
+### Built With
+
+- SwiftUI
+- WatchKit
+- Supabase (PostgreSQL + Realtime + Edge Functions)
+- Apple Push Notification service (APNs)
+- Deno (Edge Functions runtime)
 
 ---
 
 ## Features
 
-### Live Game Views
-| View | Description |
-|------|-------------|
-| **Scoreboard** | Real-time score with game clock, quarter, and team logos |
-| **Field Goal** | Lakers field goal percentage as an animated ring |
-| **Team Comparison** | Side-by-side stats: rebounds, assists, steals |
+**Live Game Views**
 
-### Countdown View
-When there is no active game, a countdown timer shows the time remaining until the next Lakers game, including the opponent logo and matchup info.
+Three swipeable screens during an active game:
 
-### Push Notifications
-Real-time APNs notifications for key game moments:
+- **Scoreboard** — Real-time score with game clock, quarter indicator, and team logos
+- **Field Goal** — Lakers field goal percentage visualized as an animated ring
+- **Team Comparison** — Side-by-side stats: rebounds, assists, steals
+
+**Countdown View**
+
+When there is no active game, a countdown timer shows the time remaining until the next Lakers game with the opponent logo and matchup info.
+
+**Push Notifications**
 
 | Notification | Trigger |
 |-------------|---------|
-| **Game started** | Q1 begins |
-| **Q[n] started** | Each quarter starts |
-| **Lakers win / lose** | Game ends with final score |
-| **Lakers score** | Lakers score points |
-| **Lakers on a run** | 5+ consecutive unanswered points |
+| Game started | Q1 begins |
+| Q[n] started | Each quarter starts |
+| Lakers win / Lakers lose | Game ends with final score |
+| Lakers score | Lakers score points |
+| Lakers on a run | 5+ consecutive unanswered points |
 
-### Notification Settings
-A dedicated settings screen lets users toggle each notification type individually. Preferences persist across sessions using `@AppStorage`.
+**Notification Settings**
+
+A dedicated settings screen lets users toggle each notification type individually. Preferences persist across sessions.
 
 ---
 
@@ -49,27 +69,23 @@ A dedicated settings screen lets users toggle each notification type individuall
 
 ```
 LakersHomecourt Watch App/
-├── LakersHomecourtApp.swift            # App entry point + AppDelegate (APNs)
+├── LakersHomecourtApp.swift            # Entry point + AppDelegate (APNs)
 ├── ContentView.swift                   # Root view with TabView navigation
 ├── View/
-│   ├── ScoreboardView.swift            # Live score display
-│   ├── FieldGoalView.swift             # FG% ring chart
-│   ├── TeamComparisonView.swift        # Stats comparison bars
-│   ├── CountdownView.swift             # Next game countdown
-│   └── NotificationSettingsView.swift  # APNs preferences
+│   ├── ScoreboardView.swift
+│   ├── FieldGoalView.swift
+│   ├── TeamComparisonView.swift
+│   ├── CountdownView.swift
+│   └── NotificationSettingsView.swift
 ├── ViewModel/
-│   └── GameViewModel.swift             # Data fetching + Realtime subscriptions
+│   └── GameViewModel.swift
 ├── Models/
-│   └── ModelData.swift                 # Data models
+│   └── ModelData.swift
 ├── Service/
-│   └── GameService.swift               # API service layer
+│   └── GameService.swift
 ├── Supabase/
-│   └── APIConfig.swift                 # Supabase configuration
+│   └── APIConfig.swift
 └── Components/
-    ├── LoadingView.swift
-    ├── ErrorView.swift
-    ├── StatBarRow.swift
-    └── ...
 ```
 
 **Pattern:** MVVM with SwiftUI + Supabase Realtime for live updates.
@@ -81,57 +97,46 @@ LakersHomecourt Watch App/
 ```
 Apple Watch
     registerForRemoteNotifications()
-APNs (Apple Push Notification service)
-    device token
-Supabase (device_tokens_watchos table)
-    webhook trigger
-Database Webhook (game_apns_trigger / score_apns_trigger)
-    UPDATE on game / team_player_stats
-Edge Function (send-apns-notification / send-score-notification)
-    APNs API call with JWT
-APNs → Apple Watch
+APNs
+    device token saved to Supabase
+Database Webhook fires on UPDATE
+    send-apns-notification  (game events)
+    send-score-notification (score events)
+APNs delivers notification to Apple Watch
 ```
 
-### Edge Functions
-| Function | Trigger | Notifications |
-|----------|---------|---------------|
-| `send-apns-notification` | UPDATE on `game` table | Game start, quarter change, game end |
+**Edge Functions**
+
+| Function | Trigger | Events |
+|----------|---------|--------|
+| `send-apns-notification` | UPDATE on `game` | Game start, quarter change, game end |
 | `send-score-notification` | UPDATE on `team_player_stats` | Lakers score, Lakers on a run |
-
-### Supabase Schema
-```sql
-simulacion_juego.device_tokens_watchos (
-  device_token_id  int4  PRIMARY KEY,
-  device_token     text  UNIQUE NOT NULL,
-  created_at       timestamptz,
-  updated_at       timestamptz
-)
-```
 
 ---
 
-## Setup
+## Getting Started
 
 ### Prerequisites
+
 - Xcode 16+
 - Apple Developer Account
 - Supabase project
 
-### 1. Clone the repository
+### Installation
+
+**1. Clone the repository**
 ```bash
-git clone https://github.com/your-org/Lakers-Homecourt-WatchOS.git
+git clone https://github.com/GalileaRestrepo/Lakers-Homecourt-WatchOS.git
 cd Lakers-Homecourt-WatchOS
 ```
 
-### 2. Configure APNs
+**2. Configure APNs**
 
-1. Register an App ID in [Apple Developer Portal](https://developer.apple.com) with **Push Notifications** capability
-2. Create an APNs key with **Sandbox & Production** environment
-3. Download the `.p8` file and place it in `secrets/` (gitignored)
+Register an App ID in [Apple Developer Portal](https://developer.apple.com) with Push Notifications capability, create an APNs key with Sandbox & Production environment, download the `.p8` file and place it in `secrets/` (gitignored).
 
-### 3. Configure Supabase Secrets
+**3. Add Supabase Secrets**
 
-In your Supabase project under Edge Functions > Secrets, add:
+In your Supabase project under Edge Functions > Secrets:
 
 | Secret | Value |
 |--------|-------|
@@ -141,68 +146,70 @@ In your Supabase project under Edge Functions > Secrets, add:
 | `APNS_PRIVATE_KEY` | Contents of your `.p8` file |
 | `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
 
-### 4. Grant schema permissions
+**4. Grant schema permissions**
 ```sql
 GRANT USAGE ON SCHEMA simulacion_juego TO service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA simulacion_juego TO service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA simulacion_juego TO service_role;
 ```
 
-### 5. Deploy Edge Functions
+**5. Deploy Edge Functions**
 ```bash
 supabase functions deploy send-apns-notification --project-ref YOUR_PROJECT_REF
 supabase functions deploy send-score-notification --project-ref YOUR_PROJECT_REF
 ```
 
-### 6. Configure Xcode
-1. Open `LakersHomecourt.xcodeproj`
-2. Select target `LakersHomecourt Watch App`
-3. In **Signing & Capabilities**, set your Team and verify Bundle ID
-4. Verify **Push Notifications** capability is enabled
+**6. Run in Xcode**
 
-### 7. Run
-Connect your iPhone and Apple Watch, select the Watch as run destination in Xcode, and hit Run.
+Open `LakersHomecourt.xcodeproj`, select the `LakersHomecourt Watch App` target, verify Push Notifications capability is enabled in Signing & Capabilities, connect your iPhone and Apple Watch, and hit Run.
 
 ---
 
 ## Security
 
-- The `.p8` APNs key is stored in `secrets/` which is gitignored
-- Only the Supabase `anon` key is in the app (safe for client-side use)
+- The `.p8` APNs key lives in `secrets/` which is gitignored
+- Only the Supabase `anon` key is bundled in the app (safe for client use)
 - The `service_role` key is only used server-side in Edge Functions
-- RLS is enabled on `device_tokens_watchos` with policies for the `anon` role
-
----
-
-## User Stories
-
-| ID | Story |
-|----|-------|
-| HU-072 | As a fan using Apple Watch, receive push notifications to stay updated on key game moments |
-| HU-073 | As a fan using Apple Watch, configure which push notifications to receive |
+- RLS is enabled on `device_tokens_watchos` with `anon` policies
 
 ---
 
 ## Known Issues
 
-**iOS 26 beta:** End-to-end testing is blocked on iOS 26 beta due to an Apple bug that generates invalid APNs tokens (`BadDeviceToken`). All backend logic has been verified through Supabase logs. Full testing requires a device running iOS 18 stable or iOS 26 stable (expected September 2026).
+**iOS 26 beta compatibility:** End-to-end push notification testing is blocked on iOS 26 beta due to an Apple bug that generates invalid APNs tokens (`BadDeviceToken`). All backend logic has been verified through Supabase logs. Full testing requires iOS 18 stable or iOS 26 stable (expected September 2026).
 
 ---
 
-## Tech Stack
+## Contributors
 
-| Layer | Technology |
-|-------|-----------|
-| UI | SwiftUI |
-| Language | Swift 5.9 |
-| Platform | watchOS 26.0+ |
-| Backend | Supabase (PostgreSQL) |
-| Realtime | Supabase Realtime |
-| Push Notifications | APNs + Supabase Edge Functions (Deno) |
-| Auth | None (standalone watch app) |
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/skymalign">
+        <img src="https://github.com/skymalign.png" width="80px" style="border-radius: 50%" alt="Cielo Maria Vega Godoy"/>
+        <br />
+        <sub><b>Cielo Maria Vega Godoy</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/GalileaRestrepo">
+        <img src="https://github.com/GalileaRestrepo.png" width="80px" style="border-radius: 50%" alt="Gali"/>
+        <br />
+        <sub><b>Galilea Restrepo</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/mcgg16">
+        <img src="https://github.com/mcgg16.png" width="80px" style="border-radius: 50%" alt="Monica Catalina Guzman"/>
+        <br />
+        <sub><b>Monica Catalina Guzman</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
 ---
 
-## Team
-
-Developed by **SharkInov** — Team LakersHomecourt
+<div align="center">
+  Built by <strong>SharkInov</strong> — Team LakersHomecourt
+</div>
