@@ -8,8 +8,14 @@
 import Foundation
 import Supabase
 
-final class GameService {
+struct GameStatus: Codable {
+    let current_quarter: Int
+    let game_end_time: String?
+    let won: Bool
+}
 
+final class GameService {
+    
     private var channel: RealtimeChannelV2?
 
     private var headers: [String: String] {
@@ -42,7 +48,20 @@ final class GameService {
 
         return try JSONDecoder().decode([T].self, from: data)
     }
-
+    
+    func fetchGameStatus() async throws -> GameStatus? {
+        var headers = self.headers
+        headers["Accept-Profile"] = "simulacion_juego"
+        
+        guard let url = URL(string: "\(APIConfig.baseURL)/game?select=current_quarter,game_end_time,won&game_id=eq.1") else { return nil }
+        
+        var request = URLRequest(url: url)
+        headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        print("fetchGameStatus raw: \(String(data: data, encoding: .utf8) ?? "nil")")
+        return try JSONDecoder().decode([GameStatus].self, from: data).first
+    }
 
     func fetchScoreboard() async throws -> ScoreboardResponse? {
 
