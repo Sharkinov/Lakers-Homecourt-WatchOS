@@ -57,9 +57,11 @@ struct ContentView: View {
         .onAppear {
             viewModel.fetchAll()
             viewModel.subscribeToRealtime()
+            viewModel.startPolling()
         }
         .onDisappear {
             viewModel.unsubscribe()
+            viewModel.stopPolling()
         }
     }
 }
