@@ -27,6 +27,10 @@ final class GameViewModel: ObservableObject {
     private var pollingTimer: Timer?
     private var lastKnownQuarter: Int = -1
     private var lastKnownGameEndTime: String? = nil
+    private var lastKnownLakersScore: Int = -1
+    private var lastKnownOpponentScore: Int = -1
+    private var lakersRunScore: Int = 0
+    private var opponentScoreDuringRun: Int = 0
 
     private let service = GameService()
 
@@ -40,6 +44,10 @@ final class GameViewModel: ObservableObject {
                 let fieldGoal   = try await service.fetchFieldGoal()
                 let comparison  = try await service.fetchTeamComparison()
                 let next        = try await service.fetchNextGame()
+
+                if let scoreboard = scoreboard {
+                    self.checkScoreNotifications(newScore: scoreboard)
+                }
 
                 self.scoreboard     = scoreboard
                 self.fieldGoal      = fieldGoal
@@ -58,6 +66,49 @@ final class GameViewModel: ObservableObject {
                 self.isLoading = false
             }
         }
+    }
+
+    // MARK: - Score Notifications
+
+    private func checkScoreNotifications(newScore: ScoreboardResponse) {
+        guard lastKnownLakersScore != -1 else {
+            lastKnownLakersScore = newScore.lakers_score
+            lastKnownOpponentScore = newScore.opposing_score
+            lakersRunScore = newScore.lakers_score
+            opponentScoreDuringRun = newScore.opposing_score
+            return
+        }
+
+        let center = UNUserNotificationCenter.current()
+        let scorePref = UserDefaults.standard.object(forKey: "notif_lakers_score") as? Bool ?? true
+        let runPref = UserDefaults.standard.object(forKey: "notif_lakers_run") as? Bool ?? true
+
+        if newScore.lakers_score > lastKnownLakersScore && scorePref {
+            let content = UNMutableNotificationContent()
+            content.title = "Lakers score"
+            content.body = "LAL \(newScore.lakers_score) - \(newScore.opponentAbbr) \(newScore.opposing_score)"
+            content.sound = .default
+            Task { try? await center.add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)) }
+        }
+
+        if newScore.opposing_score > lastKnownOpponentScore {
+            lakersRunScore = newScore.lakers_score
+            opponentScoreDuringRun = newScore.opposing_score
+        }
+
+        let lakersRunPoints = newScore.lakers_score - lakersRunScore
+        if lakersRunPoints >= 5 && newScore.opposing_score == opponentScoreDuringRun && runPref {
+            let content = UNMutableNotificationContent()
+            content.title = "Lakers on a run"
+            content.body = "\(lakersRunPoints) unanswered — LAL \(newScore.lakers_score) - \(newScore.opponentAbbr) \(newScore.opposing_score)"
+            content.sound = .default
+            Task { try? await center.add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)) }
+            lakersRunScore = newScore.lakers_score
+            opponentScoreDuringRun = newScore.opposing_score
+        }
+
+        lastKnownLakersScore = newScore.lakers_score
+        lastKnownOpponentScore = newScore.opposing_score
     }
 
     // MARK: - Local Notifications Polling
@@ -92,27 +143,23 @@ final class GameViewModel: ObservableObject {
             print("Polling: quarter=\(status.current_quarter) lastKnown=\(lastKnownQuarter)")
 
             let center = UNUserNotificationCenter.current()
-            let gameStartPref  = UserDefaults.standard.object(forKey: "notif_game_start") as? Bool ?? true
-            let quarterPref    = UserDefaults.standard.object(forKey: "notif_quarter_change") as? Bool ?? true
-            let gameEndPref    = UserDefaults.standard.object(forKey: "notif_game_end") as? Bool ?? true
+            let gameStartPref = UserDefaults.standard.object(forKey: "notif_game_start") as? Bool ?? true
+            let quarterPref   = UserDefaults.standard.object(forKey: "notif_quarter_change") as? Bool ?? true
+            let gameEndPref   = UserDefaults.standard.object(forKey: "notif_game_end") as? Bool ?? true
 
-            // Primera vez que cargamos — solo guardamos el estado sin notificar
             if lastKnownQuarter == -1 {
                 lastKnownQuarter = status.current_quarter
                 lastKnownGameEndTime = status.game_end_time
                 return
             }
 
-            // Game started
             if status.current_quarter == 1 && lastKnownQuarter == 0 && gameStartPref {
                 let content = UNMutableNotificationContent()
                 content.title = "Game started"
                 content.body = "Lakers vs \(scoreboard?.opponentAbbr ?? "OPP") — Live now"
                 content.sound = .default
                 try? await center.add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
-            }
-            // Quarter changed
-            else if status.current_quarter != lastKnownQuarter && status.current_quarter > 1 && quarterPref {
+            } else if status.current_quarter != lastKnownQuarter && status.current_quarter > 1 && quarterPref {
                 let content = UNMutableNotificationContent()
                 content.title = "Q\(status.current_quarter) started"
                 content.body = "LAL \(scoreboard?.lakers_score ?? 0) - \(scoreboard?.opponentAbbr ?? "OPP") \(scoreboard?.opposing_score ?? 0)"
@@ -120,13 +167,18 @@ final class GameViewModel: ObservableObject {
                 try? await center.add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
             }
 
-            // Game ended
             if status.game_end_time != nil && lastKnownGameEndTime == nil && gameEndPref {
                 let content = UNMutableNotificationContent()
                 content.title = status.won ? "Lakers win" : "Lakers lose"
                 content.body = "Final: LAL \(scoreboard?.lakers_score ?? 0) - \(scoreboard?.opponentAbbr ?? "OPP") \(scoreboard?.opposing_score ?? 0)"
                 content.sound = .default
                 try? await center.add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
+            }
+
+            // Check score notifications
+            if let newScoreboard = try? await service.fetchScoreboard() {
+                self.checkScoreNotifications(newScore: newScoreboard)
+                self.scoreboard = newScoreboard
             }
 
             lastKnownQuarter = status.current_quarter
